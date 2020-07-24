@@ -6,10 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.jsoup.nodes.Document;
 
 import com.rarchives.ripme.ui.RipStatusMessage.STATUS;
@@ -22,9 +23,9 @@ import com.rarchives.ripme.ui.RipStatusMessage;
  */
 public abstract class AbstractHTMLRipper extends AbstractRipper {
     
-    private Map<URL, File> itemsPending = Collections.synchronizedMap(new HashMap<URL, File>());
-    private Map<URL, File> itemsCompleted = Collections.synchronizedMap(new HashMap<URL, File>());
-    private Map<URL, String> itemsErrored = Collections.synchronizedMap(new HashMap<URL, String>());
+    private ConcurrentMap<URL, File> itemsPending = new ConcurrentHashMap<>();
+    private ConcurrentMap<URL, File> itemsCompleted = new ConcurrentHashMap<>();
+    private ConcurrentMap<URL, String> itemsErrored = new ConcurrentHashMap<>();
 
     protected AbstractHTMLRipper(URL url) throws IOException {
         super(url);

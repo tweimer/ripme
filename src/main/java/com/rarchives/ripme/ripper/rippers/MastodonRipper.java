@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +21,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class MastodonRipper extends AbstractHTMLRipper {
-    private Map<String, String> itemIDs = Collections.synchronizedMap(new HashMap<String, String>());
+    private ConcurrentMap<String, String> itemIDs = new ConcurrentHashMap<>();
 
     public MastodonRipper(URL url) throws IOException {
         super(url);
@@ -74,7 +73,7 @@ public class MastodonRipper extends AbstractHTMLRipper {
 
     @Override
     public List<String> getURLsFromPage(Document doc) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Element el : doc.select("[data-component=\"MediaGallery\"]")) {
             String props = el.attr("data-props");
             JSONObject obj = new JSONObject(props);

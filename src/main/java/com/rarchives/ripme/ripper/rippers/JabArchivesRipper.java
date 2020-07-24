@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.Locale;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -25,8 +24,9 @@ public class JabArchivesRipper extends AbstractHTMLRipper {
 
     private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+    private static final Pattern JABARCHIVES = Pattern.compile("^https?://(?:www\\.)?jabarchives.com/main/view/([a-zA-Z0-9_]+).*$");
 
-    private Map<String, String> itemPrefixes = Collections.synchronizedMap(new HashMap<String, String>());
+    private ConcurrentMap<String, String> itemPrefixes = new ConcurrentHashMap<>();
 
     public JabArchivesRipper(URL url) throws IOException {
         super(url);
@@ -44,8 +44,7 @@ public class JabArchivesRipper extends AbstractHTMLRipper {
 
     @Override
     public String getGID(URL url) throws MalformedURLException {
-        Pattern p = Pattern.compile("^https?://(?:www\\.)?jabarchives.com/main/view/([a-zA-Z0-9_]+).*$");
-        Matcher m = p.matcher(url.toExternalForm());
+        Matcher m = JABARCHIVES.matcher(url.toExternalForm());
         if (m.matches()) {
             // Return the text contained between () in the regex
             return m.group(1);
@@ -83,7 +82,7 @@ public class JabArchivesRipper extends AbstractHTMLRipper {
 
     @Override
     public List<String> getURLsFromPage(Document doc) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Element el : doc.select("#contentMain img")) {
             String url = "https://jabarchives.com" + el.attr("src").replace("thumb", "large");
             result.add(url);

@@ -5,9 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import com.rarchives.ripme.ui.RipStatusMessage;
 import com.rarchives.ripme.ui.RipStatusMessage.STATUS;
@@ -20,9 +20,9 @@ import com.rarchives.ripme.utils.Utils;
  */
 public abstract class AlbumRipper extends AbstractRipper {
 
-    private Map<URL, File> itemsPending = Collections.synchronizedMap(new HashMap<URL, File>());
-    private Map<URL, File> itemsCompleted = Collections.synchronizedMap(new HashMap<URL, File>());
-    private Map<URL, String> itemsErrored = Collections.synchronizedMap(new HashMap<URL, String>());
+    private ConcurrentMap<URL, File> itemsPending = new ConcurrentHashMap<>();
+    private ConcurrentMap<URL, File> itemsCompleted = new ConcurrentHashMap<>();
+    private ConcurrentMap<URL, String> itemsErrored = new ConcurrentHashMap<>();
 
     protected AlbumRipper(URL url) throws IOException {
         super(url);
